@@ -1,0 +1,5 @@
+Reikalavimai programai:
+Naudos streamlit sąsajai su naršykle
+Naudos ollama modelį gema3:4b
+Vartotojas įkels paveikslėlį ir dirbtinis intelektas apibūdins jo turinį.
+ollama ir streamlit dokumentacija gali rasti docs aplankale.
