@@ -19,14 +19,19 @@ def encode_image_to_base64(image_file):
         return base64.b64encode(image_bytes).decode()
     return None
 
-def analyze_image(image_base64):
+def analyze_image(image_base64, question=""):
     """Analyze image using Ollama llava:7b model"""
     try:
+        if question.strip():
+            content = f"Atsakyk į klausimą apie šį paveikslėlį: {question}"
+        else:
+            content = 'Apibūdink šio paveikslėlio turinį lietuvių kalba. Būk tikslus ir detalus. Aprašyk ką matai, kokios spalvos, objektai, žmonės, veiksmai.'
+        
         response = ollama.chat(
             model='llava:7b',
             messages=[{
                 'role': 'user',
-                'content': 'Apibūdink šio paveikslėlio turinį lietuvių kalba. Būk tikslus ir detalus. Aprašyk ką matai, kokios spalvos, objektai, žmonės, veiksmai.',
+                'content': content,
                 'images': [image_base64]
             }]
         )
@@ -92,6 +97,13 @@ def main():
         st.header("🤖 AI analizės rezultatai")
         
         if uploaded_file is not None:
+            # Tekstas klausimui
+            question = st.text_input(
+                "Klausimas apie paveikslėlį (neprivalomas)",
+                placeholder="Pvz.: Kokios spalvos yra šis objektas? Kas vyksta paveikslėlyje?",
+                help="Palikite tuščią bendram aprašymui arba užduokite konkretų klausimą"
+            )
+            
             if st.button("🔍 Analizuoti paveikslėlį", type="primary", use_container_width=True):
                 with st.spinner("Dirbtinis intelektas analizuoja paveikslėlį... ⏳"):
                     # Konvertuoti paveikslėlį į base64
@@ -99,7 +111,7 @@ def main():
                     
                     if image_base64:
                         # Gauti analizės rezultatus
-                        analysis_result = analyze_image(image_base64)
+                        analysis_result = analyze_image(image_base64, question)
                         
                         # Rodyti rezultatus
                         st.success("✅ Analizė baigta!")
